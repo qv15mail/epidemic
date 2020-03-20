@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <!-- Main Header -->
+    <div th:include="mainTemp :: mainHeader"></div>
+    <!-- Left side column. contains the logo and sidebar -->
+    <div th:include="mainTemp :: menu('2010')"></div>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" id="vueApp" >
+
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px;">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile" style="height: 62px">
+                        <div class="x_content">
+                            <el-form :inline="true" ref="userform" :model="userform" data-parsley-validate class="form-horizontal form-label-left">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">登录名:</span>
+                                        </label>
+                                        <div class="col-md-8 col-sm-12 col-xs-12">
+                                            <el-input v-model="userform.loginName" id="loginName"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">名称:</span>
+                                        </label>
+                                        <div class="col-md-8 col-sm-12 col-xs-12">
+                                            <el-input v-model="userform.userName" id="userName"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-5 col-sm-12 col-xs-12" style="font-size: 14px;">账户状态:</span>
+                                        </label>
+                                        <div class="col-md-7 col-sm-12 col-xs-12">
+                                            <el-select v-model="userform.status" placeholder="请选择" @change="query">
+                                                <el-option
+                                                        v-for="item in slist"
+                                                        :key="item.value"
+                                                        :label="item.label"
+                                                        :value="item.value">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info" style="padding-top: 8px;padding-bottom: 8px;width: 82px" @click="query" id="qrybtn">查 询</button>
+                                    </div>
+                                </div>
+                            </el-form>
+
+                            <div class="ln_solid"></div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="button" style="padding-top:8px;padding-bottom: 8px" @click="addUser">添加用户</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile">
+                        <template>
+                            <el-table
+                                    ref="singleTable"
+                                    :data="tableData"
+                                    highlight-current-row
+                                    @current-change="currRowChange"
+                                    stripe
+                                    border>
+                                <el-table-column
+                                        prop="loginName"
+                                        label="登录名"
+                                        width="150"
+                                        align="center"
+                                        v-show="false">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="userName"
+                                        label="名称"
+                                        align="center">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="roleName"
+                                        label="角色"
+                                        align="center">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="status"
+                                        label="状态"
+                                        align="center">
+                                    <template scope="scope">
+                                        <span v-if="scope.row.status=== '1'" ><el-tag type="success">有效</el-tag></span>
+                                        <span v-if="scope.row.status=== '0'" ><el-tag type="warning">无效</el-tag></span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        align="center"
+                                        width="179">
+                                    <template scope="scope">
+                                        <button type="button" class="btn btn-info btn-xs" title="编辑用户" @click="editUser(scope.row.userId)">编辑</button>
+                                        <button type="button" class="btn btn-success btn-xs" title="重置密码" @click="resetPwd(scope.row.loginName)">重置</button>
+                                        <button type="button" class="btn btn-danger btn-xs" title="删除用户" @click="delUser(scope.row.status, scope.row.userId)">删除</button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="clearfix"></div>
+                            <el-pagination
+                                    background
+                                    @size-change="handleSizeChange"
+                                    @current-change="currPageChange"
+                                    :current-page="currPage"
+                                    :page-sizes="[10, 20, 50, 100]"
+                                    :page-size="pageSize"
+                                    layout="prev, pager, next,sizes, jumper,total"
+                                    :total="totSize">
+                            </el-pagination>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--添加修改用户-->
+        <el-dialog :title="usertitle" :visible.sync="dialogFormVisible" size="small">
+            <el-form ref="userUserform" :model="userUserform" :rules="rules" label-width="120px">
+                <el-form-item label="登录名:" prop="loginName">
+                    <el-col :span="16">
+                        <el-input v-model="userUserform.loginName"></el-input>
+                    </el-col>
+                </el-form-item>
+
+                <el-form-item label="名称:" prop="userName">
+                    <el-col :span="16">
+                        <el-input v-model="userUserform.userName"></el-input>
+                    </el-col>
+                </el-form-item>
+
+                <el-form-item label="角色">
+                    <el-select v-model="userUserform.role" placeholder="请选择角色">
+                        <el-option
+                                v-for="item in rlist"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="diaglog-footer">
+                <el-button @click="resetForm('userUserform')">取消</el-button>
+                <el-button type="primary" @click="saveUser('userUserform')">确定</el-button>
+            </div>
+        </el-dialog>
+
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- Main Footer -->
+    <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el:'#vueApp',
+        data:{
+            tableData:[],
+            currPage:1,
+            pageSize:10,
+            totSize:0,
+            currentRow:null,
+            userform:{
+                loginName:'',
+                userName:'',
+                status:'1'
+            },
+            slist:[{
+                value:'1',
+                label:'有效'
+            },{
+                value:'0',
+                label:'无效'
+            }],
+            rlist:[],
+            dialogFormVisible:false,
+            usertitle:'添加用户',
+            userUserform:{
+                loginName:'',
+                userName:'',
+                role:''
+
+            },
+            rules:{
+                loginName: [
+                    { required: true, message: '请输入登录名', trigger: 'blur' },
+                    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+                ],
+                userName: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' },
+                    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+                ]
+
+            }
+        },
+        methods:{
+            handleSizeChange:function(val) {
+                //	$(".el-table").attr("height");
+                this.pageSize=val;
+                commonQuery(this,this.userform.loginName,this.userform.userName,this.userform.status,this.currPage,val);
+                //console.log('每页条'+val);
+            },
+            currPageChange:function(val) {
+                this.currPage=val;
+                commonQuery(this,this.userform.loginName,this.userform.userName,this.userform.status,this.currPage,this.pageSize);
+                //console.log('当前页:'+val);
+            },
+            currRowChange:function(val) {
+                this.currentRow = val;
+            },
+            query:function () {
+                this.pagesize=10;
+                this.currPage=1;
+                commonQuery(this,this.userform.loginName,this.userform.userName,this.userform.status,this.currPage,this.pageSize);
+                //console.log(this.currentRow);
+            },
+            addUser:function(){
+                getFillData(this,"");
+                this.dialogFormVisible = true;
+                this.usertitle="添加用户（默认密码为666666）"
+            },
+            editUser:function (ids) {
+                getFillData(this,ids);
+                this.dialogFormVisible=true;
+                this.usertitle="用户修改"
+            },
+            resetPwd:function (loginName) {
+                resetpwd(loginName);
+            },
+            delUser:function (index,row) {
+                if (index=="0"){
+                    layer.msg('该用户已经删除！',{icon:2,time:1000});
+                    return;
+                }
+                deletedata(row);
+            },
+            resetForm:function (formName) {
+                this.userUserform.loginnname='';
+                this.$refs[formName].resetFields();
+                this.dialogFormVisible = false;
+
+            },
+            saveUser:function (formName) {
+                var _that=this;
+                var vali = false;
+                this.$refs[formName].validate(
+                    function (valid) {
+                        if (valid){
+                            vali = true;
+                        } else {
+                            vali=false;
+                        }
+                    }
+                );
+                if (vali == true) {
+                    saveData(_that,_that.userUserform,formName);
+                }
+            }
+        },
+        created:function () {
+            var _self=this;
+            var loginName=this.userform.loginName;
+            var userName=this.userform.userName;
+            var status="";
+            commonQuery(this,loginName,userName,status,1,10);
+        }
+
+    })
+    
+    
+    function commonQuery(_self,loginName,userName,status,pageno,pagesize) {
+        $.ajax({
+            type:"get",
+            dataType:"json",
+            url:encodeURI(cxt+"/user/getUserList?loginname="+loginName+"&username="+userName+"&status="+status+"&pageNo="+pageno+"&pageSize="+pagesize),
+            success:function (info) {
+                _self.totSize=info.PageResult.total;
+                _self.tableData=info.PageResult.list;
+            }
+        })
+    }
+
+    function resetpwd(loginName){
+        layer.confirm('是否重置该用户密码?',{icon:3,title:'请确认'},function (index) {
+            $.ajax({
+                type:"get",
+                dataType:"json",
+                url:cxt+"/user/resetpwd?loginname="+loginName,
+                success:function(info){
+                    if (info.okFlag == undefined){
+                        layer.msg('用户认证已过期，请重新登录', {icon:2,time:1000});
+                        window.location="login";
+                        return;
+                    }
+                    if (info.okFlag != 1){
+                        layer.msg(info.message,{icon:2,time:1000});
+                    } else {
+                        layer.msg('密码重置成功',{icon:1,time:1000});
+                    }
+                }
+            })
+
+        })
+    }
+
+    function deletedata(id){
+        layer.confirm('是否删除该用户?',{icon:3,title:'请确认'},function (index) {
+            $.ajax({
+                type:"get",
+                dataType:"json",
+                url:cxt+"/user/deleteUser?ids="+id,
+                success:function (info) {
+                    if (info.okFlag ==undefined){
+                        layer.msg('用户认证已过期，请重新登录', {icon:2,time:1000});
+                        window.location="login";
+                        return;
+                    }
+                    if (info.okFlag !=1){
+                        layer.msg(info.message,{icon:2,time:1000});
+                    } else {
+                        layer.msg('删除用户成功', {icon: 1,time:1000});
+                        refreshThisTable();
+                    }
+                }
+            })
+        })
+    }
+
+    function refreshThisTable() {
+        $("#qrybtn").click();
+    }
+
+    function saveData(_that,formdata,formName) {
+        $.ajax({
+            type:"POST",
+            url:encodeURI(cxt+"/user/saveUserData"),
+            dataType:"json",
+            contentType:"application/json",
+            data:JSON.stringify(formdata),
+            success: function (info) {
+                if (info.okFlag ==undefined){
+                    layer.msg('用户认证已过期，请重新登录', {icon: 2,time:1000});
+                    window.location="login";
+                    return ;
+                }
+                if (info.okFlag !=1){
+                    layer.msg(info.result,{icon:2,time:1000});
+                } else {
+                    layer.msg('保存用户成功！',{icon:1,time:1000});
+                    refreshThisTable();
+                    vue.userUserform.ids='';
+                    _that.$refs[formName].resetFields();
+                    _that.userUserform.role="";
+                    _that.dialogFormVisible = false;
+                }
+            }
+        });
+    }
+
+    function getFillData(_self,id) {
+        $.ajax({
+           type:"get",
+           dataType:"json",
+           url:encodeURI(cxt+"/user/showUserForm?ids="+id),
+           success:function (info) {
+               var rolelist = [];
+               var role = info.roleList;
+               for (var i=0;i<role.length;i++){
+                   rolelist.push({
+                       value:role[i].ids,
+                       label:role[i].roleName
+                   });
+               }
+               if (info.user!=null){
+                   _self.userUserform=info.user;
+               }
+               _self.rlist=rolelist;
+
+           }
+        });
+    }
+
+
+
+</script>
+
+<!--
+<style>
+    .el-checkbox-group.el-transfer-panel__list{
+        height:400px;
+    }
+    .el-transfer-panel{
+        width:260px;
+    }
+    .el-transfer-panel__body{
+        height:470px;
+        width:250px;
+    }
+</style>
+-->
+
+</html>

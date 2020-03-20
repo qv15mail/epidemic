@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <!-- Main Header -->
+    <div th:include="mainTemp :: mainHeader"></div>
+    <!-- Left side column. contains the logo and sidebar -->
+    <div th:include="mainTemp :: menu('2011')"></div>
+
+    <div class="content-wrapper" id="vueApp">
+
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile" style="height: 62px">
+                        <div class="x_content">
+                            <el-form :inline="true" ref="roleform" :model="roleform" data-parsley-validate class="form-horizontal form-label-left">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">角色名称:</span>
+                                        </label>
+                                        <div class="col-md-8 col-sm-12 col-xs-12">
+                                            <el-input v-model="roleform.rolename" id="rolename"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info" style="padding-top: 8px;padding-bottom: 8px;width: 82px" @click="query" id="qrybtn">查询</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="button" style="padding-top:8px;padding-bottom: 8px" @click="addRole">添加角色</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
+
+                                </div>
+                            </el-form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--主要展示表格-->
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile">
+                        <template>
+                            <el-table
+                                    ref="singleTable"
+                                    :data="tableData"
+                                    highlight-current-row
+                                    @current-change="currRowChange"
+                                    stripe
+                                    border>
+                                <el-table-column
+                                        prop="roleName"
+                                        label="角色名称"
+                                        align="center"
+                                        width="300">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="remark"
+                                        label="标识"
+                                        align="center">
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        align="center"
+                                        width="300">
+                                    <template scope="scope">
+                                        <button type="button" class="btn btn-info btn-xs" title="编辑角色" @click="editRole(scope.row.ids)">编辑</button>
+                                        <button type="button" class="btn btn-danger btn-xs" title="删除角色" @click="delRole(scope.row.ids)">删除</button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="clearfix"></div>
+                            <el-pagination
+                                    @size-change="handleSizeChange"
+                                    @current-change="currPageChange"
+                                    :current-page="currPage"
+                                    :page-sizes="[10,20,50,100]"
+                                    :page-size="pageSize"
+                                    layout="prev,pager,next,sizes,jumper,total"
+                                    :total="totSize">
+                            </el-pagination>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--添加修改角色-->
+        <el-dialog :title="roletitle" :visible.sync="dialogFormVisible" size="tiny">
+            <el-form ref="userRoleform" :model="userRoleform" :rules="rules" label-width="120px">
+                <el-form-item label="角色名称:" prop="rolename">
+                    <el-col :span="22">
+                        <el-input v-model="userRoleform.rolename"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="标识" prop="remark">
+                    <el-col :span="22">
+                        <el-input v-model="userRoleform.remark"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="角色权限">
+                    <el-col :span="22">
+                        <el-tree
+                                :data="mlist"
+                                ref="tree"
+                                show-checkbox
+                                node-key="id"
+                                :check-change="checkedMenu"
+                                :props="defaultProps">
+                        </el-tree>
+
+                    </el-col>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('userRoleform')">取消</el-button>
+                <el-button type="primary" @click="saveRole('userRoleform')">确定</el-button>
+            </div>
+        </el-dialog>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el:'#vueApp',
+        data:{
+            tableData:[],
+            currPage:1,
+            pageSize:10,
+            totSize:0,
+            currentRow:null,
+            roleform:{
+                rolename:'',
+            },
+            mlist:[],
+            defaultProps:{
+                children:'children',
+                label:'label'
+            },
+            dialogFormVisible:false,
+            dlgAllotDevVisible:false,
+            roletitle:'添加角色',
+            userRoleform:{
+                menuIds:[],
+                rolename:'',
+                remark:'',
+                ids:'',
+            },
+            rules:{
+              rolename:[
+                  {required:true,message:'请输入角色名',trigger:'blur'},
+                  {min:2,max:20,message:'长度在2到20个字符',trigger:'blur'}
+              ],
+            },
+        },
+        methods:{
+            handleSizeChange:function(val) {//每页展示大小改变触发操作
+                this.pageSize=val;
+                commonQuery(this,this.roleform.rolename,this.currPage,val);
+            },
+            currPageChange:function(val) {//换页操作
+                this.currPage=val;
+                commonQuery(this,this.roleform.rolename,this.currPage,this.pageSize);
+            },
+            currRowChange:function(val) {//单击行操作
+                this.currentRow = val;
+            },
+            query:function () {//查询按钮方法
+                this.pagesize=10;
+                this.currPage=1;
+                commonQuery(this,this.roleform.rolename,this.currPage,this.pageSize);
+            },
+            addRole:function () {//添加角色
+                getFillData(this,"");
+                this.dialogFormVisible=true;
+                this.roletitle="添加角色";
+            },
+            editRole:function (ids) {
+                getFillData(this,ids);
+                this.dialogFormVisible=true;
+                this.roletitle="角色修改";
+            },
+            delRole:function (ids) {
+                deletedata(ids);
+            },
+            resetForm:function (formName) {
+                this.userRoleform.ids='';
+                this.$refs[formName].resetFields();
+                this.$refs.tree.setCheckedKeys([]);
+                this.dialogFormVisible = false;
+            },
+            checkedMenu:function () {//获取树形控件选中值
+                this.menuIds=this.$refs.tree.getCheckedKeys();
+                console.log(this.menuIds);
+            },
+            saveRole:function (formName) {
+                var _that=this;
+                var vali = false;
+                this.$refs[formName].validate(
+                    function (valid) {
+                    if (valid){
+                        vali=true;
+                    } else {
+                        vali=false;
+                    }
+                });
+                if (vali==true){
+                    console.log(_that.userRoleform);
+                    saveData(_that,_that.userRoleform,formName);
+                }
+            }
+        },
+        created:function(){
+            var _self=this;
+            $.ajax({
+                type:"get",
+                dataType:"json",
+                url:encodeURI(cxt+"/role/getRoleList?rolename="),
+                success:function (info) {
+                    _self.totSize=info.PageResult.total;
+                    _self.tableData=info.PageResult.list;
+                }
+            })
+        }
+    })
+    
+    function commonQuery(_self,rolename,pageno,pagesize){
+        $.ajax({
+            type:"get",
+            dataType:"json",
+            url:encodeURI(cxt+"/role/getRoleList?rolename="+rolename+"&pageNo="+pageno+"&pageSize="+pagesize),
+            success:function (info) {
+                _self.totSize=info.PageResult.total;
+                _self.tableData=info.PageResult.list;
+            }
+        })
+    }
+    
+    function getFillData(_self,id) {
+        $.ajax({
+            type:"get",
+            dataType:"json",
+            url:encodeURI(cxt+"/role/getRoleInfo?roleid="+id),
+            success:function (info) {
+                var ff = menuFmt(info.menuList);
+                _self.mlist=ff;
+
+                if (info.role!=null){
+                    _self.userRoleform.ids=info.role.ids;
+                    _self.userRoleform.rolename=info.role.roleName;
+                    _self.userRoleform.remark=info.role.remark;
+                }
+                if (info.roleMenus!=null){
+                    var rm = [];
+                    for (var i in info.roleMenus){
+                        rm.push(info.roleMenus[i].menuId)
+                    }
+                    _self.$refs.tree.setCheckedKeys(rm);
+                }
+            }
+        })
+    }
+
+    function menuFmt(menulst) {
+        var f=[];
+        
+        //获取第一级
+        for (var i=0;i<menulst.length;i++){
+            if (menulst[i].pId == 0) {
+                f.push({
+                    id:menulst[i].id,
+                    label:menulst[i].name,
+                    children:[]
+                })
+            }
+        }
+        if (f.length>0){
+            //获取第二级
+            pushMenu(menulst,f);
+        }
+        for (var i in f){
+            var s = f[i].children;
+            if (s.length>0){
+                pushMenu(menulst,s);
+            }
+        }
+        return f;
+    }
+
+    function pushMenu(menulst,pMenu) {
+        for (var i in menulst){
+            for (var j in pMenu){
+                if (menulst[i].pId == pMenu[j].id){
+                    pMenu[j].children.push({
+                        id:menulst[i].id,
+                        label:menulst[i].name,
+                        children:[]
+                    })
+                }
+            }
+        }
+    }
+
+    function saveData(_that,formdata,formName) {
+        _that.userRoleform.menuIds=_that.$refs.tree.getCheckedKeys();
+        if (_that.userRoleform.menuIds.length==0){
+            layer.msg('请选择菜单权限', {icon: 1,time:1000});
+            return;
+        }
+        $.ajax({
+            type:"POST",
+            url:encodeURI(cxt+"/role/saveRole"),
+            dataType:"json",
+            contentType:"application/json",
+            data:JSON.stringify(formdata),
+            success:function (data) {
+                if(data.errStr == undefined){
+                    layer.msg('用户认证已过期，请重新登录', {icon: 2,time:1000});
+                    window.location="login";
+                    return ;
+                }
+                if (data.errStr != "") {
+                    layer.msg(data.errStr, {icon: 2,time:1000});
+                }else {
+                    layer.msg('保存角色成功!', {icon: 1,time:1000});
+                    refreshThisTable();
+                    vue.userRoleform.ids='';
+                    _that.$refs[formName].resetFields();
+                    _that.$refs.tree.setCheckedKeys([]);
+                    _that.dialogFormVisible = false;
+                }
+            }
+        })
+    }
+
+    function refreshThisTable(){
+        $("#qrybtn").click();
+    };
+
+    function deletedata(id) {
+        layer.confirm('是否删除该角色?', {icon: 3, title:'请确认'},function (index) {
+            $.ajax({
+                type:"get",
+                dataType:"json",
+                url:encodeURI(cxt+"/role/deleteRole?roleId="+id),
+                success:function (info) {
+                    if (info.message == undefined){
+                        layer.msg('用户认证已过期，请重新登录', {icon:2,time:1000});
+                        window.location="login";
+                        return;
+                    }
+                    if (info.message!=""){
+                        layer.msg(info.message, {icon:2,time:1000});
+                    } else {
+                        layer.msg('删除角色成功', {icon: 1,time:1000});
+                        refreshThisTable();
+                    }
+                }
+            })
+        });
+    }
+
+
+
+
+
+</script>
+
+
+
+</html>

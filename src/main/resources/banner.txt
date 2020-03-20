@@ -1,0 +1,3 @@
+Application Version: ${datashow.name}--${datashow.version}
+Spring Boot Version: ${spring-boot.version}
+========================疫情预约管理平台========================

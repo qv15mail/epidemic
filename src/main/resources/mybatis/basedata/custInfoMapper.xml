@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.supwisdom.datashow.basedata.mapper.CustInfoMapper">
+
+    <!--保存用户信息-->
+    <insert id="saveCustInfo" parameterType="com.supwisdom.datashow.basedata.domain.CustInfo">
+        insert into DA_CUSTLIMIT (ids,stuempno,custname,deviceid,opercode,importtime,updatetime,expiredate,syncflag,synctime,verno,adddelflag,begindate)
+        values (#{ids},#{stuempno},#{custname},#{deviceid},#{opercode},#{importtime},#{updatetime},#{expiredate},#{syncflag},#{synctime},#{verno},#{adddelflag},#{begindate})
+    </insert>
+
+
+    <update id="updateCustInfo" parameterType="com.supwisdom.datashow.basedata.domain.CustInfo">
+        update DA_CUSTLIMIT set importtime = #{importtime},updatetime = #{updatetime},expiredate = #{expiredate},
+        syncflag = #{syncflag},synctime = #{synctime},verno = verno+1,adddelflag = #{adddelflag},begindate = #{begindate}
+        where ids = #{ids}
+    </update>
+
+    <!--分页查询用户信息-->
+    <select id="getCustWithPage" parameterType="java.lang.String" resultType="com.supwisdom.datashow.basedata.domain.CustInfo">
+        select t.*,d.devicename from DA_CUSTLIMIT t
+        left join da_device d on t.deviceid=d.deviceid
+        <where>
+            <if test="opercode != null and opercode !='system'">
+                and t.opercode = #{opercode}
+            </if>
+            <if test="custname != null and custname !=''">
+                and t.custname like concat(concat('%',#{custname}),'%')
+            </if>
+            <if test="stuempno != null and stuempno !=''">
+                and t.stuempno like concat(concat('%',#{stuempno}),'%')
+            </if>
+        </where>
+    </select>
+
+    <!--查询导入权限信息-->
+    <select id="getCustBy" parameterType="java.lang.String" resultType="com.supwisdom.datashow.basedata.domain.CustInfo">
+        select * from DA_CUSTLIMIT
+        where stuempno = #{stuempno} and deviceid = #{deviceid} and opercode = #{opercode}
+
+    </select>
+</mapper> 

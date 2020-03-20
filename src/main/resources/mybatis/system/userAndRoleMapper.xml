@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.supwisdom.datashow.system.mapper.UserAndRoleMapper">
+
+    <!--根据ids获取用户信息-->
+    <select id="getUserByIds" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.User">
+        select * from DA_USER where ids=#{ids}
+    </select>
+
+    <!--获取所有角色信息-->
+    <select id="getAllRole"  resultType="com.supwisdom.datashow.system.domain.Role">
+        select * from DA_ROLE
+    </select>
+
+    <!--获取所有菜单信息-->
+    <select id="getAllMenu" resultType="com.supwisdom.datashow.system.domain.Menu">
+        select * from DA_MENU order by orderNum
+    </select>
+
+    <!--根据id获取角色信息-->
+    <select id="getRoleByIds" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Role">
+        select * from DA_ROLE where ids = #{ids}
+    </select>
+
+    <!--根据角色id获取其菜单信息-->
+    <select id="getMenuByRoleIds" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Menu">
+        select m.menuid,m.pmenuid,m.menuname,m.url,m.perms,m.type,m.icon,m.ordernum,m.createtime
+        from DA_MENU m
+        left join DA_ROLEMENU rm on m.menuid = rm.menuid
+        <where>
+            <if test="ids !=null and ids !=''">
+                and rm.roleid = #{ids}
+            </if>
+        </where>
+        order by orderNum
+    </select>
+
+    <!--根据用户id和菜单url查询是否有权限信息-->
+    <select id="getMenuBy" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Menu">
+        select m.menuid,m.pmenuid,m.menuname,m.url,m.perms,m.type,m.icon,m.ordernum,m.createtime
+        from DA_MENU m
+        left join DA_ROLEMENU rm on m.menuid = rm.menuid
+        left join da_userrole ur on rm.roleid=ur.roleid
+        <where>
+            ur.userid=#{uids} and m.url like concat(concat('%',#{menuName}),'%')
+        </where>
+        order by orderNum
+    </select>
+
+    <!--根据角色id获取其菜单信息-->
+    <select id="getMenuByRoleIds_ext" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Menu">
+
+        select distinct m.menuid,m.pmenuid,m.menuname,m.url,m.perms,m.type,m.icon,m.ordernum,m.createtime
+        from DA_MENU m
+        start with m.menuid in (select menuid from DA_ROLEMENU where roleid=#{ids})
+        connect by prior m.pmenuid=m.menuid
+
+        order by orderNum
+    </select>
+
+    <!--分页查询用户信息-->
+    <select id="getUsersWithPage" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.UserAndRole">
+        select u.ids as userId,u.loginname as loginName,u.username as userName,
+        r.ids as roleId,r.rolename as roleName,u.deptcode as deptCode,u.status,
+        u.createtime as createTime,u.updatetime as updateTime,u.creator
+        from DA_USER u left join DA_USERROLE ur on u.ids=ur.userid
+        left join DA_ROLE r on ur.roleid=r.ids
+        <where>
+            <if test="loginName != null and loginName !=''">
+                and loginName like concat(concat('%',#{loginName}),'%')
+            </if>
+            <if test="userName != null and userName !=''">
+                and userName like concat(concat('%',#{userName}),'%')
+            </if>
+            <if test="status !=null and status !=''">
+                and status = #{status}
+            </if>
+        </where>
+        order by updatetime desc
+    </select>
+
+    <!--根据用户ID获取其角色-->
+    <select id="getRoleByUserId" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Role">
+        select r.ids,r.rolename,r.remark,r.createtime from DA_ROLE r
+        left join DA_USERROLE ur on ur.roleid=r.ids
+        left join DA_USER u on u.ids=ur.userid where u.ids=#{ids}
+    </select>
+
+    <!--根据用户登录名获取用户-->
+    <select id="getUserByLoginName" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.User">
+        select * from DA_USER where loginName = #{loginName}
+        <where>
+            <if test="ids != null and ids !=''">
+                and ids != #{ids}
+            </if>
+        </where>
+    </select>
+
+    <!--根据ids修改用户密码-->
+    <update id="updatePassword" parameterType="java.lang.String">
+        update DA_USER set password = #{newPassword},updateTime = #{now} where ids = #{ids}
+    </update>
+
+    <!--删除用户（将用户状态改为0）-->
+    <update id="updateUserToDelete" parameterType="com.supwisdom.datashow.system.domain.User">
+        update DA_USER set status = #{status},updateTime = #{updateTime} where ids=#{ids}
+    </update>
+
+    <!--保存用户信息-->
+    <insert id="saveUser" parameterType="com.supwisdom.datashow.system.domain.User">
+        insert into DA_USER (ids,loginname,username,password,deptcode,status,createtime,updatetime,creator)
+        values (#{ids},#{loginName},#{userName},#{password},#{deptCode},#{status},#{createTime},#{updateTime},#{creator})
+    </insert>
+
+    <!--分页查询角色信息-->
+    <select id="getRolesWithPage" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Role">
+        select * from DA_ROLE
+        <where>
+            <if test="roleName != null and roleName !=''">
+                and roleName like '%${roleName}%'
+            </if>
+        </where>
+        order by createtime
+    </select>
+
+    <!--根据角色名称获取角色-->
+    <select id="getRoleByName" parameterType="java.lang.String" resultType="com.supwisdom.datashow.system.domain.Role">
+        select * from DA_ROLE where roleName = #{roleName}
+    </select>
+
+    <!--保存角色信息-->
+    <insert id="saveRole" parameterType="com.supwisdom.datashow.system.domain.Role">
+        insert into DA_ROLE (ids,roleName,remark,createTime)
+        values (#{ids},#{roleName},#{remark},#{createTime})
+    </insert>
+
+    <!--保存角色负责的菜单权限-->
+    <insert id="saveRoleMenu" parameterType="java.lang.String">
+        insert into DA_ROLEMENU (roleId,menuId) values (#{roleId},#{menuId})
+    </insert>
+
+    <!--根据角色id编辑修改角色信息-->
+    <update id="updateRole" parameterType="com.supwisdom.datashow.system.domain.Role">
+        update DA_ROLE set roleName = #{roleName},remark = #{remark},createTime = #{createTime}
+        where ids = #{ids}
+    </update>
+
+    <!--根据角色id删除其菜单信息-->
+    <delete id="deleteRoleMenuByRoleId" parameterType="java.lang.String">
+        delete DA_ROLEMENU where roleId = #{roleId}
+    </delete>
+
+    <!--根据角色id删除角色-->
+    <delete id="deleteRoleByRoleId" parameterType="java.lang.String">
+        delete DA_ROLE where ids = #{ids}
+    </delete>
+
+    <!--保存用户的角色-->
+    <insert id="saveUserRole" parameterType="java.lang.String">
+        insert into DA_USERROLE (userId,roleId) values (#{userId},#{roleId})
+    </insert>
+
+    <!--编辑已有用户-->
+    <update id="updateUser" parameterType="com.supwisdom.datashow.system.domain.User">
+        update DA_USER set loginname=#{loginName},username=#{userName},password=#{password},
+        deptcode=#{deptCode},status=#{status},updatetime=#{updateTime},creator=#{creator}
+        where ids=#{ids}
+    </update>
+    
+    <!--根据用户ids获取用户密码-->
+    <select id="getUserPassword" parameterType="java.lang.String" resultType="java.lang.String">
+        select password from DA_USER where ids=#{ids}
+    </select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <!-- Main Header -->
+  <div th:include="mainTemp :: mainHeader"></div>
+  <!-- Left side column. contains the logo and sidebar -->
+  <div th:include="mainTemp :: menu('portrait')"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" id="vueApp">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+
+        <!--<span style="font-size: 3rem;" th:text="${mm1}" id="payamt">549462</span>-->
+      </h1>
+    </section>
+
+    <!--Main content-->
+
+    <section class="content container-fluid">
+      <div class="row">
+        <h1 style="align-content: center"></h1>
+      </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el: '#vueApp',
+
+        data:{
+        },
+        methods: {
+
+        },
+    })
+</script>
+</html>

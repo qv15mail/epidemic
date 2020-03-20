@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <!-- Main Header -->
+  <div th:include="mainTemp :: mainHeader"></div>
+  <!-- Left side column. contains the logo and sidebar -->
+  <div th:include="mainTemp :: menu('mu_listimport')"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" id="vueApp">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        人员名单导入
+        <!--<span style="font-size: 3rem;" th:text="${mm1}" id="payamt">549462</span>-->
+      </h1>
+    </section>
+    <section class="content container-fluid">
+      <div class="row">
+        <el-alert
+                title="人员名单导入"
+                type="info"
+                :closable="false">
+        </el-alert>
+      </div>
+      <el-divider></el-divider>
+      <div class="row">
+        <el-form :label-position="labelPosition" label-width="150px">
+          <el-form-item label="1、选择设备" style="margin-top: 20px;">
+            <el-select v-model="devids" multiple placeholder="请选择">
+              <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="2、表单名" >
+            <el-input v-model="per_sheetname" style="width:220px;"></el-input>
+          </el-form-item>
+          <el-form-item label="3、选择文件">
+            <form action="/acc/impCustList" method="post" style="float:left;" id="uploadExcelId" name="formUpload" enctype="multipart/form-data">
+              <el-button size="small" type="primary" @click="person_openExcel">打开Excel<i class="el-icon-upload el-icon--right"></i></el-button>
+              <label >文件路径: {{ textfield }}</label>
+              <input type="file" name="file" style="display: none" id="filePath" onchange="vue.textfield=this.value" />
+              <input v-model="devids" type="hidden" name="devids"></input>
+              <input v-model="textfield" type="hidden" name="textfield" ></input>
+
+            </form>
+          </el-form-item>
+          <el-form-item label="4、导入" >
+            <el-button style="margin-top: 3px;" size="small"  type="el-button el-button--success" @click="person_inExcel">导入名单</el-button>
+          </el-form-item>
+
+          <el-form-item label="下载模板" style="margin-top: 20px;width:300px;">
+            <el-button size="small" type="success" plain @click="downTemplate">导入模板</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </section>
+  </div>
+  <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el: '#vueApp',
+        data:{
+          labelPosition: 'right',
+          textfield:'',
+          devids:[],
+          per_sheetname:'sheet1',
+          options: [],
+        },
+        methods: {
+
+          person_openExcel:function(){
+            $("#filePath").click();
+            this.textfield=$("#filePath").val();
+          },
+          person_inExcel:function(){
+            if (this.devids==""){
+              this.$message.error('请选择设备!');
+              return;
+            }
+            var path=JSON.parse(JSON.stringify(this.textfield));
+            //console.log(path);
+            var file=path.substring(path.lastIndexOf(".") + 1);
+            uploadExcel(path,file);
+            this.textfield='';
+            this.devids=[];
+
+          },
+          downTemplate:function(val) {
+            var url =cxt+"/acc/downImpTemplate";
+            window.location.href=url;
+          },
+        },
+        created:function(){
+          this.per_sheetname='sheet1';
+
+          $.ajax({
+            type: "get",
+            dataType: "json",
+            url: encodeURI("/acc/getDevList"),
+            contentType: "application/json",
+            success: function (data) {
+              var devList = [];
+              var dev = data.devList;
+              dev.push({
+                value: "",
+                label: "-"
+              })
+              for (var i = 0; i < dev.length; i++) {
+                devList.push({
+                  value: dev[i].deviceid,
+                  label: dev[i].devicename
+                })
+              }
+              vue.devids = [];
+              vue.options = devList;
+            }
+          })
+        }
+      })
+    function uploadExcel(path,file) {
+      if (path.length == 0) {
+        layer.alert('请选择要上传的文件!', {icon: 5});
+        return;
+      }
+      if (path.length > 0) {
+        fileIndex = 0;
+        fileName = path;
+        if ("xls" != file) {
+          layer.alert('请选择要上传的文件，格式只能为.xls的表格文件!!', {icon: 5});
+        } else {
+          $("#fileNameId").text(path);
+          importIndex = 0;
+          var sheetName = JSON.parse(JSON.stringify(vue.per_sheetname));
+          if (sheetName == "") {
+            layer.alert('layer.alert(\'请选择要上传的文件，格式只能为.xls的表格文件!!\', {icon: 5});!', {icon: 5});
+             sheetIndex = 0;
+            return;
+          } else {
+            $('#uploadExcelId').ajaxSubmit(
+              {
+                success:   "",
+                type:      'post',
+                dataType:  'json',
+                success:function(data){
+                  console.log(data);
+                  if (data.imp_succ==""){
+                    var tmpStr = "共："+data.imp_totCnt+"条，成功："+data.imp_succCnt+"条，失败："+data.imp_errCnt+"条";
+                    layer.alert('人员名单导入完成-->'+tmpStr, {icon: 6});
+                  }else{
+                    layer.alert(data.imp_succ, {icon: 5});
+                  }
+                },
+                error:function (data) {
+                  console.log(data)
+                  layer.alert('人员名单导入完成-->'+data.responseText, {icon: 6})
+                }
+              }
+            );
+
+           }
+        }
+      }
+    }
+</script>
+</html>

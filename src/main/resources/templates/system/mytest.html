@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <style>
+    * {
+      margin: 0;
+      padding: 0
+    }
+    body {
+      font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+      overflow: auto;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tb-edit .el-input {
+      display: none
+    }
+    .tb-edit .current-row .el-input {
+      display: block
+    }
+    .tb-edit .current-row .el-input+span {
+      display: none
+    }
+  </style>
+  <!-- Main Header -->
+  <div th:include="mainTemp :: mainHeader"></div>
+  <!-- Left side column. contains the logo and sidebar -->
+  <div th:include="mainTemp :: menu('pay-poorcust')"></div>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" id="vueApp">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        我的测试内容
+      </h1>
+    </section>
+    <section class="content container-fluid">
+      <div class="row">
+        <div class="col-md-12" style="padding-right: 8px;">
+          <div class="box box-default box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">测试列表</h3>
+            </div>
+            <div class="box-body">
+              <template>
+                <el-button type="primary" @click="addRow()">新增</el-button>
+                <el-table class="tb-edit"
+                        ref="singleTable"
+                        :data="tableData"
+                        highlight-current-row
+                        stripe
+                        border>
+                  <el-table-column
+                          prop="id"
+                          label="编号"
+                          width="60"
+                          v-show="true">
+                  </el-table-column>
+                  <el-table-column prop="date" label="日期" width="180">
+                    <template scope="scope">
+                      <el-input size="small" v-model="scope.row.date" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.date}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                          prop="name"
+                          label="姓名"
+                          width="150">
+                    <template scope="scope">
+                      <el-input size="small" v-model="scope.row.name" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.name}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                          prop="address"
+                          label="地址">
+                  </el-table-column>
+                  <el-table-column label="操作">
+                    <template scope="scope">
+                      <el-button
+                              size="mini"
+                              type="danger"
+                              @click="deleteRow(scope.$index, tableData)">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="clearfix">
+
+                  <br>数据:{{tableData}}
+                </div>
+
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el: '#vueApp',
+        data:{
+            tableData: [{
+                id:1,
+                date: '2012-05-02',
+                name: '张三',
+                address: '上海市普陀区金沙江路 123 号'
+            }, {
+                id:2,
+                date: '2016-01-04',
+                name: '王吴',
+                address: '上海市黄埔区广西路 345 弄'
+            }, {
+                id:3,
+                date: '2013-05-01',
+                name: '西门吹雪',
+                address: '上海市杨浦隆昌路路 567 号'
+            }, {
+                id:4,
+                date: '2018-05-03',
+                name: '刘二麻子',
+                address: '上海市虹口区曲阳路 765 号'
+            }],
+            tmpid:4
+        },
+        methods: {
+            deleteRow(index, rows) {//删除改行
+                rows.splice(index, 1);
+            },
+            addRow(event){
+                var tmps = this.tmpid++;
+                this.tableData.push({ id: tmps,date:'',name:'',address:''})
+            },
+            handleEdit(index, row) {
+                console.log(index, row);
+            },
+
+        },
+        created:function(){
+        }
+    });
+
+</script>
+</html>

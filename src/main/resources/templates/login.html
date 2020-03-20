@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>疫情预约管理平台|登录</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link href="/css/login.css" th:href="@{/css/login.css}" rel="stylesheet">
+
+</head>
+<body >
+  <div class="login">
+    <div class="message">疫情预约管理平台-登录</div>
+    <div id="darkbannerwrap"></div>
+
+    <form name="myForm"  id="form" method="post" action="/login/login">
+        <input type="hidden" id="ctx" value="${request.contextPath}"/>
+        <input type="hidden" id="msg" value="${msg}"/>
+      <input name="action" value="login" type="hidden">
+      <input name="username" placeholder="用户名" required="" type="text" id="login-username">
+      <hr class="hr15">
+      <input name="password" placeholder="密码" required="" type="password" id="login-password">
+      <hr class="hr15">
+        <input value="登录" style="width:100%;" type="submit">
+      <!--<input value="登录" style="width:100%;" type="button" class="loginbtn" onclick="submitLogin()">-->
+      <hr class="hr20">
+        <div class="err" style="color:#ff0000"><span th:text="${message}"></span> </div>
+      <!-- 帮助 <a onClick="alert('请联系管理员')">忘记密码</a> -->
+    </form>
+
+
+  </div>
+
+<div class="copyright">上海树维信息科技有限公司©2020 <a href="http://www.supwisdowm.com/" target="_blank">疫情预约管理平台</a></div>
+<script th:inline="javascript"> var ctx = [[@{/}]];</script>
+<script>
+
+
+
+
+  /*function submitLogin(){
+      var username = $('#login-username').val();
+      var password = $('#login-password').val();
+      if (username == null || username ==''){
+          layer.msg("请输入用户名",{time:2000});
+          return;
+      }
+      if (password == null || password ==''){
+          layer.msg("请输入密码",{time:2000});
+          return;
+      }
+      var fm = new FormData(document.getElementById("form"));
+      $.ajax({
+          url:encodeURI("/login/login"),
+          type:"POST",
+          data:fm,
+          processData:false,
+          contentType:false,
+          success:function (data) {
+              layer.msg(data.message,{time:2000});
+          }
+      })
+  }*/
+</script>
+</body>
+</html>
