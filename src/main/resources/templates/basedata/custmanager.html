@@ -132,7 +132,7 @@
                                 <el-table-column
                                         label="操作"
                                         align="center"
-                                        width="120">
+                                        width="80">
                                     <template scope="scope">
                                         <button type="button" class="btn btn-danger btn-xs" title="删除用户" @click="delUser(scope.row.ids)">删除</button>
                                     </template>
@@ -209,11 +209,8 @@
                 commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
                 //console.log(this.currentRow);
             },
-            delUser:function (index,row) {
-                if (index=="0"){
-                    layer.msg('该用户已经删除！',{icon:2,time:1000});
-                    return;
-                }
+            delUser:function (row) {
+                //console.log(row)
                 deletedata(row);
             },
             resetForm:function (formName) {
@@ -224,10 +221,8 @@
             },
         },
         created:function () {
-            var _self=this;
             var custname=this.userform.custname;
             var stuempno=this.userform.stuempno;
-            var status="";
             commonQuery(this,custname,stuempno,1,10);
         }
 
@@ -272,7 +267,6 @@
     function refreshThisTable() {
         $("#qrybtn").click();
     }
-
 
     function getFillData(_self,id) {
         $.ajax({

@@ -18,4 +18,5 @@ public interface CustInfoMapper {
 
     public CustInfo getCustBy(@Param("opercode") String opercode,@Param("deviceid") String deviceid, @Param("stuempno") String stuempno);
 
+    public CustInfo getCustById(@Param("opercode") String opercode,@Param("ids") String ids);
 }

@@ -40,4 +40,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where stuempno = #{stuempno} and deviceid = #{deviceid} and opercode = #{opercode}
 
     </select>
+
+    <select id="getCustById" parameterType="java.lang.String" resultType="com.supwisdom.datashow.basedata.domain.CustInfo">
+        select * from DA_CUSTLIMIT
+        <where>
+            <if test="opercode != null and opercode !='system'">
+                and t.opercode = #{opercode}
+            </if>
+            <if test="ids != null and ids !=''">
+                and ids = #{ids}
+            </if>
+        </where>
+
+    </select>
 </mapper> 

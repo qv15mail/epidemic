@@ -258,4 +258,36 @@ public class CustController {
         return map;
     }
 
+    @ResponseBody
+    @RequestMapping("/acc/deleteCust")
+    public Map deleteUser(@RequestParam(value = "ids",required = true) String ids,
+                          HttpServletRequest request){
+        Map map = new HashMap();
+        int okFlag = 0;
+        String message ="";
+        HttpSession session = request.getSession();
+        String opercode = (String)session.getAttribute("loginName");
+        try{
+            CustInfo custInfo = custService.getCustById(opercode,ids);
+            if (custInfo == null){
+                message = "该用户不存在";
+            }else {
+                custInfo.setAdddelflag("2");
+                custInfo.setUpdatetime(DateUtil.getNow());
+                custInfo.setSyncflag("0");
+                custInfo.setSynctime("");
+                okFlag = 1;
+                custService.updateCustInfo(custInfo);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            message = "删除用户出现异常";
+            log.error("删除用户失败："+e.getMessage());
+        }
+        map.put("okFlag",okFlag);
+        map.put("message",message);
+        map.put("result",message);
+        return map;
+    }
+
 }

@@ -34,4 +34,9 @@ public class CustServiceImpl implements CustService {
     public CustInfo getCustBy(String opercode, String deviceid, String stuempno) {
         return custMapper.getCustBy(opercode,deviceid,stuempno);
     }
+
+    @Override
+    public CustInfo getCustById(String opercode, String ids) {
+        return custMapper.getCustById(opercode,ids);
+    }
 }
