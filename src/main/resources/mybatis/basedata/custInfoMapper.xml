@@ -13,14 +13,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <update id="updateCustInfo" parameterType="com.supwisdom.datashow.basedata.domain.CustInfo">
         update DA_CUSTLIMIT set importtime = #{importtime},updatetime = #{updatetime},expiredate = #{expiredate},
-        syncflag = #{syncflag},synctime = #{synctime},verno = verno+1,adddelflag = #{adddelflag},begindate = #{begindate}
+        syncflag = #{syncflag},synctime = #{synctime},verno = 0,adddelflag = #{adddelflag},begindate = #{begindate}
         where ids = #{ids}
     </update>
 
     <!--分页查询用户信息-->
     <select id="getCustWithPage" parameterType="java.lang.String" resultType="com.supwisdom.datashow.basedata.domain.CustInfo">
-        select t.*,d.devicename from DA_CUSTLIMIT t
+        select t.*,d.devicename,iv.status,iv.downtime from DA_CUSTLIMIT t
         left join da_device d on t.deviceid=d.deviceid
+        left join t_iv_devcust iv on t.deviceid=iv.deviceid and t.opercode=iv.operid and t.stuempno=iv.thirdid
         <where>
             <if test="opercode != null and opercode !='system'">
                 and t.opercode = #{opercode}

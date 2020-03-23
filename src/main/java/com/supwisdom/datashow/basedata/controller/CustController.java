@@ -13,8 +13,10 @@ import com.github.pagehelper.PageInfo;
 import com.supwisdom.datashow.basedata.domain.CustBean;
 import com.supwisdom.datashow.basedata.domain.CustInfo;
 import com.supwisdom.datashow.basedata.domain.DeviceInfo;
+import com.supwisdom.datashow.basedata.domain.RecordInfo;
 import com.supwisdom.datashow.basedata.service.CustService;
 import com.supwisdom.datashow.basedata.service.DeviceService;
+import com.supwisdom.datashow.basedata.service.RecordService;
 import com.supwisdom.datashow.utils.DateUtil;
 import com.supwisdom.datashow.utils.StringUtil;
 import org.slf4j.Logger;
@@ -44,6 +46,8 @@ public class CustController {
     private CustService custService;
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private RecordService recordService;
 
     @RequestMapping("/basedata/userPortrait")
     public String cts(ModelMap model){
@@ -58,6 +62,11 @@ public class CustController {
     @RequestMapping("/mu_listmgr")
     public String listmgr(ModelMap model){
         return "basedata/custmanager";
+    }
+
+    @RequestMapping("/mu_dtlquery")
+    public String dtlquery(ModelMap model){
+        return "basedata/recorddtl";
     }
 
     @RequestMapping("/acc/curStatu")
@@ -287,6 +296,34 @@ public class CustController {
         map.put("okFlag",okFlag);
         map.put("message",message);
         map.put("result",message);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping("acc/getDtlList")
+    public Map getDtlList(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "custname",required = false)String custname,
+            @RequestParam(value = "stuempno",required = false)String stuempno,
+            @RequestParam(value = "btemp",required = false)String btemp,
+            @RequestParam(value = "etemp",required = false)String etemp,
+            @RequestParam(value = "bdate",required = false)String bdate,
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1")int pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize){
+        Map map = new HashMap();
+        try {
+            PageHelper.startPage(pageNo,pageSize);
+            HttpSession session = request.getSession();
+            String opercode = (String) session.getAttribute("loginName");
+            List<RecordInfo> getDtlList = recordService.getRecordList(bdate,custname,stuempno,btemp,etemp);
+            PageInfo<RecordInfo> pageInfo = new PageInfo<>(getDtlList);
+
+            map.put("PageResult",pageInfo);
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("查询流水失败："+e.getMessage());
+        }
         return map;
     }
 

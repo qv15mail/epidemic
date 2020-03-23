@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.supwisdom.datashow.basedata.mapper.RecordMapper">
+
+    <select id="getRecordList" resultType="com.supwisdom.datashow.basedata.domain.RecordInfo">
+        select stuempno,custname,deviceid,devicename,ivtypename,transdate,transtime,
+        inout,temperature,status
+        from v_iv_record
+        <where>
+            <if test="transdate != null and transdate !=''">
+                and transdate = #{transdate}
+            </if>
+            <if test="btemp != null and btemp !=0">
+                and temperature >= #{btemp}
+            </if>
+            <if test="etemp != null and etemp !=0">
+                and temperature &lt;= #{etemp}
+            </if>
+            <if test="custname != null and custname !=''">
+                and custname like concat(concat('%',#{custname}),'%')
+            </if>
+            <if test="stuempno != null and stuempno !=''">
+                and stuempno like concat(concat('%',#{stuempno}),'%')
+            </if>
+        </where>
+    </select>
+</mapper> 

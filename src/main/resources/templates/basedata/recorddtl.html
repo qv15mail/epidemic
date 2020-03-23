@@ -6,7 +6,7 @@
     <!-- Main Header -->
     <div th:include="mainTemp :: mainHeader"></div>
     <!-- Left side column. contains the logo and sidebar -->
-    <div th:include="mainTemp :: menu('2111')"></div>
+    <div th:include="mainTemp :: menu('2112')"></div>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" id="vueApp" >
@@ -14,49 +14,62 @@
         <div class="row">
             <div class="col-md-12" style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px;">
                 <div class="box box-primary" style="margin-bottom: 15px">
-                    <div class="box-body box-profile" style="height: 62px">
+                    <div class="box-body box-profile" style="height: 122px">
                         <div class="x_content">
                             <el-form :inline="true" ref="userform" :model="userform" data-parsley-validate class="form-horizontal form-label-left">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">姓名:</span>
-                                        </label>
-                                        <div class="col-md-8 col-sm-12 col-xs-12">
-                                            <el-input v-model="userform.custname" id="custname"></el-input>
+                                <el-row>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">姓名:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-input v-model="userform.custname" id="custname"></el-input>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">学/工号:</span>
-                                        </label>
-                                        <div class="col-md-8 col-sm-12 col-xs-12">
-                                            <el-input v-model="userform.stuempno" id="stuempno"></el-input>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">学/工号:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-input v-model="userform.stuempno" id="stuempno"></el-input>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-<!--                                <div class="col-md-3">-->
-<!--                                    <div class="form-group">-->
-<!--                                        <label class="control-label col-md-5 col-sm-12 col-xs-12" style="font-size: 14px;">账户状态:</span>-->
-<!--                                        </label>-->
-<!--                                        <div class="col-md-7 col-sm-12 col-xs-12">-->
-<!--                                            <el-select v-model="userform.status" placeholder="请选择" @change="query">-->
-<!--                                                <el-option-->
-<!--                                                        v-for="item in slist"-->
-<!--                                                        :key="item.value"-->
-<!--                                                        :label="item.label"-->
-<!--                                                        :value="item.value">-->
-<!--                                                </el-option>-->
-<!--                                            </el-select>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">日期:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-date-picker style="width:150px;"
+                                                                v-model="userform.tdate" type="date" :editable="false"
+                                                                placeholder="选择日期"  value-format="yyyyMMdd">
+                                                </el-date-picker>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div class="col-md-1">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-info" style="padding-top: 8px;padding-bottom: 8px;width: 82px" @click="query" id="qrybtn">查 询</button>
+                                </el-row>
+                                <el-row>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">体温:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-input v-model="userform.btemp" placeholder="最低温度" style="width:77px;"></el-input>
+                                                --
+                                                <el-input v-model="userform.etemp" placeholder="最高温度" style="width:77px;"></el-input>
+
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-info" style="padding-top: 8px;padding-bottom: 8px;width: 82px" @click="query" id="qrybtn">查 询</button>
+                                        </div>
+                                    </div>
+                                </el-row>
                             </el-form>
 
                             <div class="ln_solid"></div>
@@ -96,62 +109,48 @@
                                         align="center">
                                 </el-table-column>
                                 <el-table-column
-                                        prop="begindate"
-                                        label="开始日期"
+                                        prop="transdate"
+                                        label="日期"
                                         width="120"
                                         align="center">
                                 </el-table-column>
                                 <el-table-column
-                                        prop="expiredate"
-                                        label="过期日期"
+                                        prop="transtime"
+                                        label="时间"
                                         width="120"
                                         align="center">
                                 </el-table-column>
                                 <el-table-column
-                                        prop="updatetime"
-                                        label="导入时间"
-                                        width="150"
-                                        align="center">
-                                </el-table-column>
-                                <el-table-column
-                                        prop="opercode"
-                                        label="操作员"
+                                        prop="ivtypename"
+                                        label="认证类型"
                                         width="120"
                                         align="center">
                                 </el-table-column>
                                 <el-table-column
-                                        prop="adddelflag"
+                                        prop="temperature"
+                                        label="温度"
+                                        width="120"
+                                        align="center">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="inout"
                                         label="标志"
-                                        width="70"
+                                        width="80"
                                         align="center">
                                     <template scope="scope">
-                                        <span v-if="scope.row.adddelflag=== '1'" ><el-tag type="success">增加</el-tag></span>
-                                        <span v-if="scope.row.adddelflag=== '2'" ><el-tag type="warning">删除</el-tag></span>
+                                        <span v-if="scope.row.inout=== '1'" >进</span>
+                                        <span v-if="scope.row.inout=== '2'" >出</span>
+                                        <span v-if="scope.row.inout=== '3'" >不区分</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
                                         prop="status"
                                         label="状态"
-                                        width="90"
+                                        width="80"
                                         align="center">
                                     <template scope="scope">
-                                        <span v-if="scope.row.status=== '0' "><el-tag type="warning">待下发</el-tag></span>
-                                        <span v-if="scope.row.status=== '1'" ><el-tag type="success">已下发</el-tag></span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                        prop="downtime"
-                                        label="下发时间"
-                                        width="120"
-                                        align="center">
-                                </el-table-column>
-
-                                <el-table-column
-                                        label="操作"
-                                        align="center"
-                                        width="70">
-                                    <template scope="scope">
-                                        <button type="button" class="btn btn-danger btn-xs" title="删除用户" @click="delUser(scope.row.ids)">删除</button>
+                                        <span v-if="scope.row.status=== '1'" >有效</span>
+                                        <span v-if="scope.row.status=== '2'" >无效</span>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -194,7 +193,9 @@
             userform:{
                 custname:'',
                 stuempno:'',
-                status:'1'
+                btemp:35,
+                etemp:38,
+                tdate:''
             },
             slist:[{
                 value:'1',
@@ -209,12 +210,12 @@
             handleSizeChange:function(val) {
                 //	$(".el-table").attr("height");
                 this.pageSize=val;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,val);
+                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,val);
                 //console.log('每页条'+val);
             },
             currPageChange:function(val) {
                 this.currPage=val;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
                 //console.log('当前页:'+val);
             },
             currRowChange:function(val) {
@@ -223,12 +224,8 @@
             query:function () {
                 this.pagesize=10;
                 this.currPage=1;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
                 //console.log(this.currentRow);
-            },
-            delUser:function (row) {
-                //console.log(row)
-                deletedata(row);
             },
             resetForm:function (formName) {
                 this.userUserform.loginnname='';
@@ -240,19 +237,23 @@
         created:function () {
             var custname=this.userform.custname;
             var stuempno=this.userform.stuempno;
-            commonQuery(this,custname,stuempno,1,10);
+            var bdate = this.userform.tdate;
+            var btemp = this.userform.btemp;
+            var etemp = this.userform.etemp;
+            commonQuery(this,bdate,btemp,etemp,custname,stuempno,1,10);
         }
 
     })
     
     
-    function commonQuery(_self,custname,stuempno,pageno,pagesize) {
+    function commonQuery(_self,bdate,btemp,etemp,custname,stuempno,pageno,pagesize) {
         $.ajax({
             type:"get",
             dataType:"json",
-            url:encodeURI(cxt+"/acc/getCustList?custname="+custname+"&stuempno="+stuempno+"&pageNo="+pageno+"&pageSize="+pagesize),
+            url:encodeURI(cxt+"/acc/getDtlList?custname="+custname+
+                "&bdate="+bdate+"&btemp="+btemp+"&etemp="+etemp+
+                "&stuempno="+stuempno+"&pageNo="+pageno+"&pageSize="+pagesize),
             success:function (info) {
-                console.log(info)
                 _self.totSize=info.PageResult.total;
                 _self.tableData=info.PageResult.list;
             }

@@ -15,6 +15,24 @@ public class CustInfo {
     private String adddelflag;
     private String begindate;
     private String devicename;
+    private String downtime;
+    private String status;
+
+    public String getDowntime() {
+        return downtime;
+    }
+
+    public void setDowntime(String downtime) {
+        this.downtime = downtime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getDevicename() {
         return devicename;
