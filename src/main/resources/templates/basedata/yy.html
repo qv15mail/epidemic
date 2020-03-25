@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head >
+    <link rel="stylesheet" href="/plugins/element-ui/theme-chalk/index.css" th:href="@{/plugins/element-ui/theme-chalk/index.css}">
+</head>
+<style>
+    .el-header, .el-footer {
+        background-color: #B3C0D1;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+        font-size: 24px;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 200px;
+    }
+
+    .el-main {
+        background-color: #E9EEF3;
+        color: #333;
+        text-align: center;
+        line-height: 160px;
+    }
+
+    body > .el-container {
+        margin-bottom: 40px;
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+</style>
+<div class="wrapper">
+    <div class="content-wrapper" id="vueApp" style="margin-left: 0px;">
+        <el-container>
+            <el-header>访客预约申请</el-header>
+            <el-main>
+                <el-form ref="form" :model="form" label-width="120px">
+                    <el-form-item label="申请人姓名">
+                        <el-input v-model="form.custname"></el-input>
+                    </el-form-item>
+                    <el-form-item label="申请人手机">
+                        <el-input v-model="form.mobile"></el-input>
+                    </el-form-item>
+                    <el-form-item label="身份证号">
+                        <el-input v-model="form.idno"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约时间">
+                        <el-date-picker type="form.sdate" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="预约部门">
+                        <el-input v-model="form.dept"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约联系人">
+                        <el-input v-model="form.link"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约事由">
+                        <el-input type="textarea" v-model="form.reason"></el-input>
+                    </el-form-item>
+                    <div>
+
+                    </div>
+
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit">预约保存</el-button>
+                        <el-button>预约查询</el-button>
+                    </el-form-item>
+                    <div style="font-size: 18px;color: #E6A23C">
+                        <el-link type="warning">预约查询需要输入申请人姓名和申请人手机</el-link>
+                    </div>
+
+                </el-form>
+            </el-main>
+        </el-container>
+    </div>
+</div>
+<script src="/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/jquery.form.js" th:src="@{/js/jquery.form.js}"></script>
+<script src="/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+<script type="text/javascript" src="/js/echarts.min.js" th:href="@{/js/echarts.min.js}" ></script>
+<script type="text/javascript" src="/plugins/element-ui/index.js" th:src="@{/plugins/element-ui/index.js}"></script>
+
+<script th:inline="javascript">
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el: '#vueApp',
+        data: {
+            form: {
+                name: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: '',
+                type: '',
+                resource: '',
+                desc: ''
+            }
+        },
+        methods: {
+            onSubmit:function() {
+                $.ajax({
+                    type:"POST",
+                    url:encodeURI("/user/saveUserData"),
+                    dataType:"json",
+                    contentType:"application/json",
+                    data:JSON.stringify(this.form),
+                    success: function (info) {
+                        _self.totSize = info.PageResult.total;
+                        _self.tableData = info.PageResult.list;
+                    }
+                })
+            }
+        },
+        created: function () {
+
+        }
+
+    })
+
+
+    function commonQuery(_self, bdate, btemp, etemp, custname, stuempno,devid,status, pageno, pagesize) {
+
+    }
+
+
+    function refreshThisTable() {
+        $("#qrybtn").click();
+    }
+
+</script>
+</html>

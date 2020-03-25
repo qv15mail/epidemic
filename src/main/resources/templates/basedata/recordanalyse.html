@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <!-- Main Header -->
+    <div th:include="mainTemp :: mainHeader"></div>
+    <!-- Left side column. contains the logo and sidebar -->
+    <div th:include="mainTemp :: menu('2113')"></div>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" id="vueApp">
+
+        <div class="row">
+            <div class="col-md-12"
+                 style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px;">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile" style="height: 70px">
+                        <div class="x_content">
+                            <el-form :inline="true" ref="userform" :model="userform" data-parsley-validate
+                                     class="form-horizontal form-label-left">
+                                <el-row>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">日期:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-date-picker style="width:150px;"
+                                                                v-model="userform.tdate" type="date" :editable="false"
+                                                                placeholder="选择日期" value-format="yyyyMMdd">
+                                                </el-date-picker>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-info"
+                                                    style="padding-top: 8px;padding-bottom: 8px;width: 82px"
+                                                    @click="query" id="qrybtn">查 询
+                                            </button>
+                                        </div>
+                                    </div>
+                                </el-row>
+
+                            </el-form>
+
+                            <div class="ln_solid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px">
+                <div class="box box-primary" style="margin-bottom: 15px">
+                    <div class="box-body box-profile">
+                        <template>
+                            <el-table
+                                    ref="singleTable"
+                                    :data="tableData"
+                                    highlight-current-row
+                                    @current-change="currRowChange"
+                                    stripe
+                                    border>
+                                <el-table-column
+                                        prop="devicename"
+                                        label="设备名称"
+                                        align="center"
+                                        v-show="false">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="totcnt"
+                                        label="记录总数"
+                                        width="120"
+                                        align="right">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="qrcode"
+                                        label="二维码"
+                                        width="120"
+                                        align="right">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="inppt"
+                                        label="输入"
+                                        width="120"
+                                        align="right">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="card"
+                                        label="刷卡"
+                                        width="120"
+                                        align="right">
+                                </el-table-column>
+
+                            </el-table>
+                            <div class="clearfix"></div>
+                            <el-pagination
+                                    background
+                                    @size-change="handleSizeChange"
+                                    @current-change="currPageChange"
+                                    :current-page="currPage"
+                                    :page-sizes="[20, 30, 50, 100]"
+                                    :page-size="pageSize"
+                                    layout="prev, pager, next,sizes, jumper,total"
+                                    :total="totSize">
+                            </el-pagination>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- Main Footer -->
+    <div th:include="mainTemp :: bootom"></div>
+
+</div>
+<!-- ./wrapper -->
+</body>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+
+    var cxt = [[${#httpServletRequest.getContextPath()}]];
+    var vue = new Vue({
+        el: '#vueApp',
+        data: {
+            tableData: [],
+            currPage: 1,
+            pageSize: 20,
+            totSize: 0,
+            currentRow: null,
+
+            options: [],
+            userform: {
+                tdate: '',
+            },
+            slist: [{
+                value: '-1',
+                label: '全部'
+            },{
+                value: '1',
+                label: '有效'
+            }, {
+                value: '0',
+                label: '无效'
+            }],
+            rlist: [],
+        },
+        methods: {
+            handleSizeChange: function (val) {
+                //	$(".el-table").attr("height");
+                this.pageSize = val;
+                commonQuery(this, this.userform.tdate,this.currPage, val);
+                //console.log('每页条'+val);
+            },
+            currPageChange: function (val) {
+                this.currPage = val;
+                commonQuery(this, this.userform.tdate, this.currPage, this.pageSize);
+                //console.log('当前页:'+val);
+            },
+            currRowChange: function (val) {
+                this.currentRow = val;
+            },
+            query: function () {
+                this.pagesize = 10;
+                this.currPage = 1;
+                commonQuery(this, this.userform.tdate, this.currPage, this.pageSize);
+                //console.log(this.currentRow);
+            },
+            resetForm: function (formName) {
+                this.userUserform.loginnname = '';
+                this.$refs[formName].resetFields();
+                this.dialogFormVisible = false;
+
+            },
+        },
+        created: function () {
+            var bdate = this.userform.tdate;
+            commonQuery(this, bdate, 1, 20);
+        }
+
+    })
+
+
+    function commonQuery(_self, bdate,pageno, pagesize) {
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: encodeURI(cxt + "/acc/getDtlAnalyse?bdate=" + bdate + "&pageNo=" + pageno + "&pageSize=" + pagesize),
+            success: function (info) {
+                _self.totSize = info.PageResult.total;
+                _self.tableData = info.PageResult.list;
+            }
+        })
+    }
+
+
+
+    function refreshThisTable() {
+        $("#qrybtn").click();
+    }
+</script>
+</html>

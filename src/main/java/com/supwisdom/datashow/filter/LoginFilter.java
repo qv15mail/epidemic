@@ -11,7 +11,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
     String NO_LOGIN = "您还未登录";
     String[] staticPaths = new String[]{"/alte","/bootstrap","/css","/devfull","/font-awesome","/images","/logicons","/js","/plugins","/favicon"};
-    String[] includeUrls = new String[]{"/login/login","/","/logout","/df"};
+    String[] includeUrls = new String[]{"/login/login","/","/logout","/df","/yy"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

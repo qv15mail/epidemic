@@ -24,6 +24,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="stuempno != null and stuempno !=''">
                 and stuempno like concat(concat('%',#{stuempno}),'%')
             </if>
+            <if test="devid != null and devid >0">
+                and deviceid = #{devid}
+            </if>
+            <if test="status != null and status >=0">
+                and status = #{status}
+            </if>
         </where>
     </select>
+    <select id="getRecordAnalyse" resultType="com.supwisdom.datashow.basedata.domain.RecordAnalyse">
+        select deviceid,devicename,count(*) as totcnt,
+        sum(case when ivtype='qrcode' then  1 else 0 end) qrcode,
+        sum(case when ivtype='card' then  1 else 0 end) card,
+        sum(case when ivtype='input' then  1 else 0 end) inppt
+        from v_iv_record where transdate=#{transdate}
+        group by deviceid,devicename
+    </select>
+
 </mapper> 

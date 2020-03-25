@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head th:include="include :: header"></head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -9,18 +9,21 @@
     <div th:include="mainTemp :: menu('2112')"></div>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" id="vueApp" >
+    <div class="content-wrapper" id="vueApp">
 
         <div class="row">
-            <div class="col-md-12" style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px;">
+            <div class="col-md-12"
+                 style="padding-left: 30px;padding-right: 30px;padding-top: 10px;padding-bottom: 2px;">
                 <div class="box box-primary" style="margin-bottom: 15px">
                     <div class="box-body box-profile" style="height: 122px">
                         <div class="x_content">
-                            <el-form :inline="true" ref="userform" :model="userform" data-parsley-validate class="form-horizontal form-label-left">
+                            <el-form :inline="true" ref="userform" :model="userform" data-parsley-validate
+                                     class="form-horizontal form-label-left">
                                 <el-row>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">姓名:</span>
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12"
+                                                   style="font-size: 14px;">姓名:</span>
                                             </label>
                                             <div class="col-md-8 col-sm-12 col-xs-12">
                                                 <el-input v-model="userform.custname" id="custname"></el-input>
@@ -29,7 +32,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">学/工号:</span>
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12"
+                                                   style="font-size: 14px;">学/工号:</span>
                                             </label>
                                             <div class="col-md-8 col-sm-12 col-xs-12">
                                                 <el-input v-model="userform.stuempno" id="stuempno"></el-input>
@@ -43,17 +47,15 @@
                                             <div class="col-md-8 col-sm-12 col-xs-12">
                                                 <el-date-picker style="width:150px;"
                                                                 v-model="userform.tdate" type="date" :editable="false"
-                                                                placeholder="选择日期"  value-format="yyyyMMdd">
+                                                                placeholder="选择日期" value-format="yyyyMMdd">
                                                 </el-date-picker>
                                             </div>
                                         </div>
                                     </div>
-
-                                </el-row>
-                                <el-row>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">体温:</span>
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12"
+                                                   style="font-size: 14px;">体温:</span>
                                             </label>
                                             <div class="col-md-8 col-sm-12 col-xs-12">
                                                 <el-input v-model="userform.btemp" placeholder="最低温度" style="width:77px;"></el-input>
@@ -64,9 +66,46 @@
                                         </div>
                                     </div>
 
+                                </el-row>
+                                <el-row>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">设备:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-select v-model="userform.devids" placeholder="请选择">
+                                                    <el-option
+                                                            v-for="item in options"
+                                                            :key="item.value"
+                                                            :label="item.label"
+                                                            :value="item.value">
+                                                    </el-option>
+                                                </el-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4 col-sm-12 col-xs-12" style="font-size: 14px;">状态:</span>
+                                            </label>
+                                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                                <el-select v-model="userform.status" placeholder="请选择">
+                                                    <el-option
+                                                            v-for="item in slist"
+                                                            :key="item.value"
+                                                            :label="item.label"
+                                                            :value="item.value">
+                                                    </el-option>
+                                                </el-select>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-1">
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-info" style="padding-top: 8px;padding-bottom: 8px;width: 82px" @click="query" id="qrybtn">查 询</button>
+                                            <button type="button" class="btn btn-info"
+                                                    style="padding-top: 8px;padding-bottom: 8px;width: 82px"
+                                                    @click="query" id="qrybtn">查 询
+                                            </button>
                                         </div>
                                     </div>
                                 </el-row>
@@ -138,9 +177,9 @@
                                         width="80"
                                         align="center">
                                     <template scope="scope">
-                                        <span v-if="scope.row.inout=== '1'" >进</span>
-                                        <span v-if="scope.row.inout=== '2'" >出</span>
-                                        <span v-if="scope.row.inout=== '3'" >不区分</span>
+                                        <span v-if="scope.row.inout=== '1'">进</span>
+                                        <span v-if="scope.row.inout=== '2'">出</span>
+                                        <span v-if="scope.row.inout=== '3'">不区分</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -149,8 +188,8 @@
                                         width="80"
                                         align="center">
                                     <template scope="scope">
-                                        <span v-if="scope.row.status=== '1'" >有效</span>
-                                        <span v-if="scope.row.status=== '2'" >无效</span>
+                                        <span v-if="scope.row.status=== '1'"><el-tag type="success">有效</el-tag></span>
+                                        <span v-if="scope.row.status=== '0'"><el-tag type="warning">无效</el-tag></span>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -183,99 +222,131 @@
 
     var cxt = [[${#httpServletRequest.getContextPath()}]];
     var vue = new Vue({
-        el:'#vueApp',
-        data:{
-            tableData:[],
-            currPage:1,
-            pageSize:20,
-            totSize:0,
-            currentRow:null,
-            userform:{
-                custname:'',
-                stuempno:'',
-                btemp:35,
-                etemp:38,
-                tdate:''
+        el: '#vueApp',
+        data: {
+            tableData: [],
+            currPage: 1,
+            pageSize: 20,
+            totSize: 0,
+            currentRow: null,
+
+            options: [],
+            userform: {
+                custname: '',
+                stuempno: '',
+                btemp: 35,
+                etemp: 38,
+                tdate: '',
+                devids:'0',
+                status:'-1'
             },
-            slist:[{
-                value:'1',
-                label:'有效'
+            slist: [{
+                value: '-1',
+                label: '全部'
             },{
-                value:'0',
-                label:'无效'
+                value: '1',
+                label: '有效'
+            }, {
+                value: '0',
+                label: '无效'
             }],
-            rlist:[],
+            rlist: [],
         },
-        methods:{
-            handleSizeChange:function(val) {
+        methods: {
+            handleSizeChange: function (val) {
                 //	$(".el-table").attr("height");
-                this.pageSize=val;
-                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,val);
+                this.pageSize = val;
+                commonQuery(this, this.userform.tdate, this.userform.btemp, this.userform.etemp, this.userform.custname, this.userform.stuempno,this.userform.devids,this.userform.status, this.currPage, val);
                 //console.log('每页条'+val);
             },
-            currPageChange:function(val) {
-                this.currPage=val;
-                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+            currPageChange: function (val) {
+                this.currPage = val;
+                commonQuery(this, this.userform.tdate, this.userform.btemp, this.userform.etemp, this.userform.custname, this.userform.stuempno,this.userform.devids,this.userform.status, this.currPage, this.pageSize);
                 //console.log('当前页:'+val);
             },
-            currRowChange:function(val) {
+            currRowChange: function (val) {
                 this.currentRow = val;
             },
-            query:function () {
-                this.pagesize=10;
-                this.currPage=1;
-                commonQuery(this,this.userform.tdate,this.userform.btemp,this.userform.etemp,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+            query: function () {
+                this.pagesize = 10;
+                this.currPage = 1;
+                commonQuery(this, this.userform.tdate, this.userform.btemp, this.userform.etemp, this.userform.custname, this.userform.stuempno,this.userform.devids,this.userform.status, this.currPage, this.pageSize);
                 //console.log(this.currentRow);
             },
-            resetForm:function (formName) {
-                this.userUserform.loginnname='';
+            resetForm: function (formName) {
+                this.userUserform.loginnname = '';
                 this.$refs[formName].resetFields();
                 this.dialogFormVisible = false;
 
             },
         },
-        created:function () {
-            var custname=this.userform.custname;
-            var stuempno=this.userform.stuempno;
+        created: function () {
+            $.ajax({
+                type: "get",
+                dataType: "json",
+                url: encodeURI("/acc/getDevList"),
+                contentType: "application/json",
+                success: function (data) {
+                    var devList = [];
+                    var dev = data.devList;
+                    devList.push({
+                        value: "0",
+                        label: "全部"
+                    })
+                    for (var i = 0; i < dev.length; i++) {
+                        devList.push({
+                            value: dev[i].deviceid,
+                            label: dev[i].devicename
+                        })
+                    }
+                    vue.devids = [];
+                    vue.options = devList;
+                }
+            })
+            var custname = this.userform.custname;
+            var stuempno = this.userform.stuempno;
             var bdate = this.userform.tdate;
             var btemp = this.userform.btemp;
             var etemp = this.userform.etemp;
-            commonQuery(this,bdate,btemp,etemp,custname,stuempno,1,10);
+            var devid = this.userform.devids;
+            var status = this.userform.status;
+            commonQuery(this, bdate, btemp, etemp, custname, stuempno,devid,status, 1, 10);
         }
 
     })
-    
-    
-    function commonQuery(_self,bdate,btemp,etemp,custname,stuempno,pageno,pagesize) {
+
+
+    function commonQuery(_self, bdate, btemp, etemp, custname, stuempno,devid,status, pageno, pagesize) {
         $.ajax({
-            type:"get",
-            dataType:"json",
-            url:encodeURI(cxt+"/acc/getDtlList?custname="+custname+
-                "&bdate="+bdate+"&btemp="+btemp+"&etemp="+etemp+
-                "&stuempno="+stuempno+"&pageNo="+pageno+"&pageSize="+pagesize),
-            success:function (info) {
-                _self.totSize=info.PageResult.total;
-                _self.tableData=info.PageResult.list;
+            type: "get",
+            dataType: "json",
+            url: encodeURI(cxt + "/acc/getDtlList?custname=" + custname +
+                "&bdate=" + bdate + "&btemp=" + btemp + "&etemp=" + etemp +
+                    "&devid="+devid+"&status="+status+
+                "&stuempno=" + stuempno + "&pageNo=" + pageno + "&pageSize=" + pagesize),
+            success: function (info) {
+                _self.totSize = info.PageResult.total;
+                _self.tableData = info.PageResult.list;
             }
         })
     }
 
-    function deletedata(id){
-        layer.confirm('是否删除该用户?',{icon:3,title:'请确认'},function (index) {
+    function deletedata(id) {
+        layer.confirm('是否删除该用户?', {icon: 3, title: '请确认'}, function (index) {
             $.ajax({
-                type:"get",
-                dataType:"json",
-                url:cxt+"/acc/deleteCust?ids="+id,
-                success:function (info) {
-                    if (info.okFlag ==undefined){
-                        layer.msg('用户认证已过期，请重新登录', {icon:2,time:1000});
-                        window.location="login";
+                type: "get",
+                dataType: "json",
+                url: cxt + "/acc/deleteCust?ids=" + id,
+                success: function (info) {
+                    if (info.okFlag == undefined) {
+                        layer.msg('用户认证已过期，请重新登录', {icon: 2, time: 1000});
+                        window.location = "login";
                         return;
                     }
-                    if (info.okFlag !=1){
-                        layer.msg(info.message,{icon:2,time:1000});
+                    if (info.okFlag != 1) {
+                        layer.msg(info.message, {icon: 2, time: 1000});
                     } else {
-                        layer.msg('删除用户成功', {icon: 1,time:1000});
+                        layer.msg('删除用户成功', {icon: 1, time: 1000});
                         refreshThisTable();
                     }
                 }
@@ -287,26 +358,26 @@
         $("#qrybtn").click();
     }
 
-    function getFillData(_self,id) {
+    function getFillData(_self, id) {
         $.ajax({
-           type:"get",
-           dataType:"json",
-           url:encodeURI(cxt+"/user/showUserForm?ids="+id),
-           success:function (info) {
-               var rolelist = [];
-               var role = info.roleList;
-               for (var i=0;i<role.length;i++){
-                   rolelist.push({
-                       value:role[i].ids,
-                       label:role[i].roleName
-                   });
-               }
-               if (info.user!=null){
-                   _self.userUserform=info.user;
-               }
-               _self.rlist=rolelist;
+            type: "get",
+            dataType: "json",
+            url: encodeURI(cxt + "/user/showUserForm?ids=" + id),
+            success: function (info) {
+                var rolelist = [];
+                var role = info.roleList;
+                for (var i = 0; i < role.length; i++) {
+                    rolelist.push({
+                        value: role[i].ids,
+                        label: role[i].roleName
+                    });
+                }
+                if (info.user != null) {
+                    _self.userUserform = info.user;
+                }
+                _self.rlist = rolelist;
 
-           }
+            }
         });
     }
 </script>

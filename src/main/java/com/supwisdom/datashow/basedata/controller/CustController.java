@@ -10,13 +10,11 @@ import cn.afterturn.easypoi.view.PoiBaseView;
 import cn.hutool.core.util.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.supwisdom.datashow.basedata.domain.CustBean;
-import com.supwisdom.datashow.basedata.domain.CustInfo;
-import com.supwisdom.datashow.basedata.domain.DeviceInfo;
-import com.supwisdom.datashow.basedata.domain.RecordInfo;
+import com.supwisdom.datashow.basedata.domain.*;
 import com.supwisdom.datashow.basedata.service.CustService;
 import com.supwisdom.datashow.basedata.service.DeviceService;
 import com.supwisdom.datashow.basedata.service.RecordService;
+import com.supwisdom.datashow.system.domain.UserRoleBean;
 import com.supwisdom.datashow.utils.DateUtil;
 import com.supwisdom.datashow.utils.StringUtil;
 import org.slf4j.Logger;
@@ -24,10 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +44,11 @@ public class CustController {
     @Autowired
     private RecordService recordService;
 
+    @RequestMapping("/yy")
+    public String yy(ModelMap model){
+        return "basedata/yy";
+    }
+
     @RequestMapping("/basedata/userPortrait")
     public String cts(ModelMap model){
         return "basedata/userPortrait";
@@ -67,6 +67,11 @@ public class CustController {
     @RequestMapping("/mu_dtlquery")
     public String dtlquery(ModelMap model){
         return "basedata/recorddtl";
+    }
+
+    @RequestMapping("/mu_dtlanalyse")
+    public String dtlanalyse(ModelMap model){
+        return "basedata/recordanalyse";
     }
 
     @RequestMapping("/acc/curStatu")
@@ -210,7 +215,11 @@ public class CustController {
                     } else {
                         custInfo.setBegindate(cust.getBegindate());
                     }
-                    custInfo.setExpiredate(cust.getExpiredate());
+                    if (cust.getExpiredate()==null || cust.getExpiredate().equals("")){
+                        custInfo.setExpiredate("20201231");
+                    }else{
+                        custInfo.setExpiredate(cust.getExpiredate());
+                    }
 
                     custInfo.setOpercode(opercode);
                     custInfo.setSyncflag("0");
@@ -300,7 +309,7 @@ public class CustController {
     }
 
     @ResponseBody
-    @RequestMapping("acc/getDtlList")
+    @RequestMapping("/acc/getDtlList")
     public Map getDtlList(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -309,20 +318,84 @@ public class CustController {
             @RequestParam(value = "btemp",required = false)String btemp,
             @RequestParam(value = "etemp",required = false)String etemp,
             @RequestParam(value = "bdate",required = false)String bdate,
+            @RequestParam(value = "devid",required = false)String devid,
+            @RequestParam(value = "status",required = false)String status,
             @RequestParam(value = "pageNo",required = false,defaultValue = "1")int pageNo,
             @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize){
         Map map = new HashMap();
         try {
             PageHelper.startPage(pageNo,pageSize);
             HttpSession session = request.getSession();
-            String opercode = (String) session.getAttribute("loginName");
-            List<RecordInfo> getDtlList = recordService.getRecordList(bdate,custname,stuempno,btemp,etemp);
+            //String opercode = (String) session.getAttribute("loginName");
+            List<RecordInfo> getDtlList = recordService.getRecordList(bdate,custname,stuempno,btemp,etemp,Integer.parseInt(devid),Integer.parseInt(status));
             PageInfo<RecordInfo> pageInfo = new PageInfo<>(getDtlList);
 
             map.put("PageResult",pageInfo);
         }catch (Exception e){
             e.printStackTrace();
             log.error("查询流水失败："+e.getMessage());
+        }
+        return map;
+    }
+
+    /**
+     * 预约申请保存
+     * @param postData
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/acc/saveAppointment")
+    public Map saveAppointment(@RequestBody Appoinment postData,
+                          HttpServletRequest request){
+        Map map = new HashMap();
+        int okFlag = 0;
+        String message ="";
+        HttpSession session = request.getSession();
+        String opercode = (String)session.getAttribute("loginName");
+        try{
+            CustInfo custInfo = custService.getCustById(opercode,"");
+            if (custInfo == null){
+                message = "该用户不存在";
+            }else {
+                custInfo.setAdddelflag("2");
+                custInfo.setUpdatetime(DateUtil.getNow());
+                custInfo.setSyncflag("0");
+                custInfo.setSynctime("");
+                okFlag = 1;
+                custService.updateCustInfo(custInfo);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            message = "删除用户出现异常";
+            log.error("删除用户失败："+e.getMessage());
+        }
+        map.put("okFlag",okFlag);
+        map.put("message",message);
+        map.put("result",message);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping("/acc/getDtlAnalyse")
+    public Map getDtlAnalyse(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "bdate",required = false)String bdate,
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1")int pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize){
+        Map map = new HashMap();
+        try {
+            PageHelper.startPage(pageNo,pageSize);
+            //HttpSession session = request.getSession();
+            //String opercode = (String) session.getAttribute("loginName");
+            List<RecordAnalyse> getDtlList = recordService.getRecordAnalyse(bdate);
+            PageInfo<RecordAnalyse> pageInfo = new PageInfo<>(getDtlList);
+
+            map.put("PageResult",pageInfo);
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("流水分析失败："+e.getMessage());
         }
         return map;
     }

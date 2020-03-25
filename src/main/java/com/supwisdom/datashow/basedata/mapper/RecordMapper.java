@@ -1,8 +1,7 @@
 package com.supwisdom.datashow.basedata.mapper;
 
-import com.supwisdom.datashow.basedata.domain.DeviceInfo;
+import com.supwisdom.datashow.basedata.domain.RecordAnalyse;
 import com.supwisdom.datashow.basedata.domain.RecordInfo;
-import oracle.jrockit.jfr.Recording;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -16,6 +15,9 @@ public interface RecordMapper {
                                           @Param("custname") String custname,
                                           @Param("stuempno") String stuempno,
                                           @Param("btemp") String btemp,
-                                          @Param("etemp") String etemp);
+                                          @Param("etemp") String etemp,
+                                          @Param("devid") Integer devid,
+                                          @Param("status") Integer status);
 
+    public List<RecordAnalyse> getRecordAnalyse(@Param("transdate") String transdate);
 }
