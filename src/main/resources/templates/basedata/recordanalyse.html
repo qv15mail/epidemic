@@ -134,7 +134,7 @@
 
             options: [],
             userform: {
-                tdate: '',
+                tdate: new Date(Date.now()),
             },
             slist: [{
                 value: '-1',
@@ -188,7 +188,7 @@
         $.ajax({
             type: "get",
             dataType: "json",
-            url: encodeURI(cxt + "/acc/getDtlAnalyse?bdate=" + bdate + "&pageNo=" + pageno + "&pageSize=" + pagesize),
+            url: encodeURI(cxt + "/acc/getDtlAnalyse?bdate=" + Formatdate(bdate) + "&pageNo=" + pageno + "&pageSize=" + pagesize),
             success: function (info) {
                 _self.totSize = info.PageResult.total;
                 _self.tableData = info.PageResult.list;
@@ -196,7 +196,23 @@
         })
     }
 
+    function Formatdate(date){
+        if(date==null||date==''){
+            return '';
+        }
+        var d=new Date(date);
+        var month=d.getMonth() + 1+'';
+        var date=d.getDate()+'';
+        if(month.length==1){
+            month='0'+month;
+        }
+        if(date.length==1){
+            date='0'+date;
+        }
+        var formated=d.getFullYear() + '' + month + '' +date;
 
+        return formated;
+    }
 
     function refreshThisTable() {
         $("#qrybtn").click();

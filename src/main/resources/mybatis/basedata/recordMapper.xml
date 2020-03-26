@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         sum(case when ivtype='qrcode' then  1 else 0 end) qrcode,
         sum(case when ivtype='card' then  1 else 0 end) card,
         sum(case when ivtype='input' then  1 else 0 end) inppt
-        from v_iv_record where transdate=#{transdate}
+        from v_iv_record where transdate=#{transdate} and status=1
         group by deviceid,devicename
     </select>
 
