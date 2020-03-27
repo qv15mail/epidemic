@@ -237,7 +237,7 @@ public class CustController {
                     succCnt++;
                     tmpi++;
                 }catch (Exception ex){
-                    log.error(ex.getMessage());
+                    log.error(ex.getMessage()+",stuempno:"+stuempno);
                     errCnt++;
                 }
             }

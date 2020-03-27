@@ -197,6 +197,10 @@
     }
 
     function Formatdate(date){
+        console.log(date)
+        if (date.length==8){
+            return date;
+        }
         if(date==null||date==''){
             return '';
         }

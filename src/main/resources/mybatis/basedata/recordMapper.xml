@@ -31,6 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and status = #{status}
             </if>
         </where>
+        order by transtime desc
     </select>
     <select id="getRecordAnalyse" resultType="com.supwisdom.datashow.basedata.domain.RecordAnalyse">
         select deviceid,devicename,count(*) as totcnt,
