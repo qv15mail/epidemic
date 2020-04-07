@@ -17,6 +17,24 @@ public class CustInfo {
     private String devicename;
     private String downtime;
     private String status;
+    private String addstatus;
+    private String addremark;
+
+    public String getAddstatus() {
+        return addstatus;
+    }
+
+    public void setAddstatus(String addstatus) {
+        this.addstatus = addstatus;
+    }
+
+    public String getAddremark() {
+        return addremark;
+    }
+
+    public void setAddremark(String addremark) {
+        this.addremark = addremark;
+    }
 
     public String getDowntime() {
         return downtime;

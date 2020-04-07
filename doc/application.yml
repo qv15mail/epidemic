@@ -1,0 +1,111 @@
+datashow:
+  # 名称
+  name: 疫情预防预约系统
+  # 版本
+  version: 1.0.2
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 8088
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+#    basedir: /home/temp
+
+# 日志配置
+logging:
+  level:
+    com.supwisdom.datashow: info
+    org.springframework: WARN
+    org.spring.springboot.dao: info
+
+spring:
+  datasource:
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    #    url: jdbc:oracle:thin:@(description=(address=(protocol=tcp)(port=1521)(host=172.20.28.85))(connect_data=(service_name=xykdb)))
+    #    username: ecard
+    #    password: ecust_ykt2018
+    url: jdbc:oracle:thin:@172.28.201.101:47922:orcl
+    username: ecardtest
+    password: kingstar
+
+    #    url: jdbc:oracle:thin:@172.16.6.2:1521:yktdb
+    #    username: ecard
+    #    password: kingstar_shpc2018
+
+    # 连接池配置
+    druid:
+      # 初始连接数
+      initial-size: 10
+      # 最大连接池数量
+      max-active: 100
+      # 最小连接池数量
+      min-idle: 10
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /monitor/druid/*
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+  # 模板引擎
+  thymeleaf:
+    prefix: classpath:/templates/
+    mode: HTML
+    encoding: utf-8
+    # 禁用缓存
+    cache: false
+  #热部署生效
+  devtools:
+    restart:
+      enabled: false
+
+#jedis:
+#  pool:
+#    host: 127.0.0.1
+#    port: 6379
+#    password:
+#    config :
+#      maxTotal: 100
+#      maxIdle: 10
+#      maxWaitMillis : 100000
+#设置重启的目录
+#spring.devtools.restart.additional-paths: src/main/java
+#classpath目录下的WEB-INF文件夹内容修改不重启
+
+# MyBatis
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.supwisdom.datashow
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath:mybatis/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis/mybatis-config.xml
+  logging:
+    level:
+      com.supwisdom.datashow.basedata.*: debug

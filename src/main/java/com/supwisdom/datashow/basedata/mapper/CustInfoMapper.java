@@ -14,7 +14,8 @@ public interface CustInfoMapper {
 
     public void updateCustInfo(CustInfo custInfo);
 
-    public List<CustInfo> getCustWithPage(@Param("custname") String custname, @Param("stuempno") String stuempno,@Param("opercode") String opercode);
+    public List<CustInfo> getCustWithPage(@Param("custname") String custname, @Param("stuempno") String stuempno,
+                                          @Param("opercode") String opercode,@Param("status") String status);
 
     public CustInfo getCustBy(@Param("opercode") String opercode,@Param("deviceid") String deviceid, @Param("stuempno") String stuempno);
 

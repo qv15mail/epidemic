@@ -26,8 +26,8 @@ public class CustServiceImpl implements CustService {
     }
 
     @Override
-    public List<CustInfo> getCustWithPage(String custname, String stuempno,String opercode) {
-        return custMapper.getCustWithPage(custname,stuempno,opercode);
+    public List<CustInfo> getCustWithPage(String custname, String stuempno,String opercode,String status) {
+        return custMapper.getCustWithPage(custname,stuempno,opercode,status);
     }
 
     @Override

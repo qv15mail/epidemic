@@ -35,22 +35,22 @@
                                         </div>
                                     </div>
                                 </div>
-<!--                                <div class="col-md-3">-->
-<!--                                    <div class="form-group">-->
-<!--                                        <label class="control-label col-md-5 col-sm-12 col-xs-12" style="font-size: 14px;">账户状态:</span>-->
-<!--                                        </label>-->
-<!--                                        <div class="col-md-7 col-sm-12 col-xs-12">-->
-<!--                                            <el-select v-model="userform.status" placeholder="请选择" @change="query">-->
-<!--                                                <el-option-->
-<!--                                                        v-for="item in slist"-->
-<!--                                                        :key="item.value"-->
-<!--                                                        :label="item.label"-->
-<!--                                                        :value="item.value">-->
-<!--                                                </el-option>-->
-<!--                                            </el-select>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-5 col-sm-12 col-xs-12" style="font-size: 14px;">导入状态:</span>
+                                        </label>
+                                        <div class="col-md-7 col-sm-12 col-xs-12">
+                                            <el-select v-model="userform.status" placeholder="请选择" @change="query">
+                                                <el-option
+                                                        v-for="item in slist"
+                                                        :key="item.value"
+                                                        :label="item.label"
+                                                        :value="item.value">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="col-md-1">
                                     <div class="form-group">
@@ -113,6 +113,23 @@
                                         width="150"
                                         align="center">
                                 </el-table-column>
+
+                                <el-table-column
+                                        prop="addstatus"
+                                        label="导入状态"
+                                        width="100"
+                                        align="center">
+                                    <template scope="scope">
+                                        <span v-if="scope.row.addstatus=== 'success'" ><el-tag type="success">导入成功</el-tag></span>
+                                        <span v-if="scope.row.addstatus=== 'fail'" ><el-tag type="warning">导入失败</el-tag></span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="addremark"
+                                        label="失败原因"
+                                        width="150"
+                                        align="center">
+                                </el-table-column>
                                 <el-table-column
                                         prop="opercode"
                                         label="操作员"
@@ -148,6 +165,7 @@
 
                                 <el-table-column
                                         label="操作"
+                                        fixed="right"
                                         align="center"
                                         width="70">
                                     <template scope="scope">
@@ -194,14 +212,17 @@
             userform:{
                 custname:'',
                 stuempno:'',
-                status:'1'
+                status:''
             },
             slist:[{
-                value:'1',
-                label:'有效'
+                value:'',
+                label:'所有'
             },{
-                value:'0',
-                label:'无效'
+                value:'success',
+                label:'成功'
+            },{
+                value:'fail',
+                label:'失败'
             }],
             rlist:[],
         },
@@ -209,12 +230,12 @@
             handleSizeChange:function(val) {
                 //	$(".el-table").attr("height");
                 this.pageSize=val;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,val);
+                commonQuery(this,this.userform.custname,this.userform.stuempno,this.userform.status,this.currPage,val);
                 //console.log('每页条'+val);
             },
             currPageChange:function(val) {
                 this.currPage=val;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+                commonQuery(this,this.userform.custname,this.userform.stuempno,this.userform.status,this.currPage,this.pageSize);
                 //console.log('当前页:'+val);
             },
             currRowChange:function(val) {
@@ -223,7 +244,7 @@
             query:function () {
                 this.pagesize=10;
                 this.currPage=1;
-                commonQuery(this,this.userform.custname,this.userform.stuempno,this.currPage,this.pageSize);
+                commonQuery(this,this.userform.custname,this.userform.stuempno,this.userform.status,this.currPage,this.pageSize);
                 //console.log(this.currentRow);
             },
             delUser:function (row) {
@@ -240,17 +261,18 @@
         created:function () {
             var custname=this.userform.custname;
             var stuempno=this.userform.stuempno;
-            commonQuery(this,custname,stuempno,1,10);
+            var status = this.userform.status;
+            commonQuery(this,custname,stuempno,status,1,10);
         }
 
     })
     
     
-    function commonQuery(_self,custname,stuempno,pageno,pagesize) {
+    function commonQuery(_self,custname,stuempno,status,pageno,pagesize) {
         $.ajax({
             type:"get",
             dataType:"json",
-            url:encodeURI(cxt+"/acc/getCustList?custname="+custname+"&stuempno="+stuempno+"&pageNo="+pageno+"&pageSize="+pagesize),
+            url:encodeURI(cxt+"/acc/getCustList?custname="+custname+"&stuempno="+stuempno+"&status="+status+"&pageNo="+pageno+"&pageSize="+pagesize),
             success:function (info) {
                 console.log(info)
                 _self.totSize=info.PageResult.total;

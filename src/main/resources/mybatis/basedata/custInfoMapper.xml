@@ -32,6 +32,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="stuempno != null and stuempno !=''">
                 and t.stuempno like concat(concat('%',#{stuempno}),'%')
             </if>
+            <if test="status != null and status !=''">
+                and t.addstatus = #{status}
+            </if>
         </where>
     </select>
 

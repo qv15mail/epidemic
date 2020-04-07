@@ -258,6 +258,7 @@ public class CustController {
             HttpServletResponse response,
             @RequestParam(value = "custname",required = false)String custname,
             @RequestParam(value = "stuempno",required = false)String stuempno,
+            @RequestParam(value = "status",required = false)String status,
             @RequestParam(value = "pageNo",required = false,defaultValue = "1")int pageNo,
             @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize){
         Map map = new HashMap();
@@ -265,7 +266,7 @@ public class CustController {
             PageHelper.startPage(pageNo,pageSize);
             HttpSession session = request.getSession();
             String opercode = (String) session.getAttribute("loginName");
-            List<CustInfo> getCustList = custService.getCustWithPage(custname,stuempno,opercode);
+            List<CustInfo> getCustList = custService.getCustWithPage(custname,stuempno,opercode,status);
             PageInfo<CustInfo> pageInfo = new PageInfo<>(getCustList);
 
             map.put("PageResult",pageInfo);
